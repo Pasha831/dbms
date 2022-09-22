@@ -8,5 +8,5 @@ fun main() {
     studentsTable.inflate(namesPath)
     studentsTable.show()
 
-
+    println(studentsTable.findStudentById(-7))
 }

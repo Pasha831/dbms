@@ -70,4 +70,18 @@ class StudentsTable {
             println(student)
         }
     }
+
+    /**
+     * Finds a student inside a table. If there is no student with such id - returns warning.
+     * @param id id of a student to find
+     */
+    fun findStudentById(id: Int): String {
+        val student = studentsList.find { it.id == id }
+
+        return if (student == null) {
+            "No student with id $id in table!"
+        } else {
+            "${student.firstname} ${student.lastname} ${student.patronymic}"
+        }
+    }
 }
