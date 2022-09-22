@@ -1,5 +1,5 @@
 /**
- * Useful constants of the data base
+ * Useful constants of the database
  */
 object DbConstants {
     const val tablesDirectory = "src\\main\\resources\\tables"
