@@ -21,7 +21,10 @@ class StudentsTable {
         }
     }
 
-    private val studentsList = mutableListOf<Student>()
+    companion object {
+        val studentsList = mutableListOf<Student>()
+    }
+
     private var currentId = 1
 
     /**
