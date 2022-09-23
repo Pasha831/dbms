@@ -19,6 +19,9 @@ class StudentsTable {
         override fun toString(): String {
             return "$id $firstname $lastname $patronymic"
         }
+        fun getStudentName(): String {
+            return "$firstname $lastname $patronymic"
+        }
     }
 
     companion object {
