@@ -3,5 +3,5 @@
  */
 object DbConstants {
     const val tablesDirectory = "src\\main\\resources\\tables"
-    const val studentsTablePath = tablesDirectory + "students.txt"
+    const val studentsTablePath = "$tablesDirectory\\students.txt"
 }

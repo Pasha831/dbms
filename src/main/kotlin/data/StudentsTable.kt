@@ -23,9 +23,8 @@ class StudentsTable {
 
     companion object {
         val studentsList = mutableListOf<Student>()
+        var currentId = 1
     }
-
-    private var currentId = 1
 
     /**
      * Inflates students table previously clearing studentsList.

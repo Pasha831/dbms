@@ -12,5 +12,5 @@ fun main() {
     println(studentsTable.findStudentById(-7))
 
     val gui = Gui()
-    gui.launchScreen()
+    gui.launchMainScreen()
 }
