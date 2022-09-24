@@ -10,11 +10,12 @@ class TestingTable {
 
     data class Testing(
         val studentId: Int,
-        val variantId: Int
+        val variantId: Int,
+        val studentFullName: String,
+        val variantName: String
     ) {
         override fun toString(): String {
-            return "${StudentsTable.studentsList.find { it.id == studentId }?.getStudentName()} " +
-                    "${VariantsTable.variantsList.find { it.id == variantId }?.getVariantName()}"
+            return "$studentFullName $variantName"
         }
     }
 
@@ -28,9 +29,13 @@ class TestingTable {
         val outputStream = File(DbConstants.testingTablePath).printWriter()
 
         for (student in StudentsTable.studentsList) {
+            val newVariantId = VariantsTable.variantsList[(student.id - 1) % DbConstants.numberOfVariants].id
+
             val newTesting = TestingTable.Testing(
                 studentId = student.id,
-                variantId = VariantsTable.variantsList[(student.id - 1) % DbConstants.numberOfVariants].id
+                variantId = newVariantId,
+                studentFullName = StudentsTable.studentsList.find { it.id == student.id }!!.getStudentName(),
+                variantName = VariantsTable.variantsList.find { it.id == newVariantId }!!.getVariantName()
             )
 
             TestingTable.testingList.add(newTesting)
