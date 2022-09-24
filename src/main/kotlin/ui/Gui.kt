@@ -4,14 +4,17 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
@@ -41,13 +44,38 @@ class Gui {
     }
 
     @Composable
-    private fun StudentsTableScreen() {
-        val tableData by mutableStateOf(StudentsTable.studentsList)
+    private fun RowScope.TableDeleteCell(
+        text: String,
+        weight: Float,
+        onClick: () -> Unit
+    ) {
+        Text(
+            text = text,
+            Modifier
+                .border(1.dp, Color.Black)
+                .weight(weight)
+                .padding(8.dp)
+                .clickable(onClick = onClick),
+            textAlign = TextAlign.Center,
+            color = Color.Red
+        )
+    }
 
-        val column1Weight = .25f // 25%
+    fun <T> SnapshotStateList<T>.swapList(newList: MutableList<T>) {
+        clear()
+        addAll(newList)
+    }
+
+    @Composable
+    private fun StudentsTableScreen() {
+        val tableData = mutableStateListOf<StudentsTable.Student>()
+        tableData.swapList(StudentsTable.studentsList)
+
+        val column1Weight = .1f // 25%
         val column2Weight = .25f // 25%
         val column3Weight = .25f // 25%
         val column4Weight = .25f // 25%
+        val column5Weight = .1f
 
         LazyColumn(
             Modifier.border(4.dp, Color.Black)
@@ -59,6 +87,7 @@ class Gui {
                     TableCell(text = "Name", weight = column2Weight)
                     TableCell(text = "Surname", weight = column3Weight)
                     TableCell(text = "Patronymic", weight = column4Weight)
+                    TableCell(text = "", weight = column5Weight)
                 }
             }
 
@@ -70,6 +99,14 @@ class Gui {
                     TableCell(text = firstname, weight = column2Weight)
                     TableCell(text = lastname, weight = column3Weight)
                     TableCell(text = patronymic, weight = column4Weight)
+                    TableDeleteCell(
+                        text = "Delete",
+                        weight = column5Weight,
+                        onClick = {
+                            StudentsTable.studentsList.removeIf { student -> student.id == id }
+                            tableData.swapList(StudentsTable.studentsList)
+                        }
+                    )
                 }
             }
         }
