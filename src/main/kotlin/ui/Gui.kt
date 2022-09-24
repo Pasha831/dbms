@@ -12,15 +12,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import data.StudentsTable
+import data.TestingTable
+import data.VariantsTable
 import java.util.Timer
 import kotlin.concurrent.schedule
 
 class Gui {
+    private var isStudentTableVisible by mutableStateOf(true)
+    private var isVariantsTableVisible by mutableStateOf(false)
+    private var isTestingTableVisible by mutableStateOf(false)
+
     @Composable
     private fun RowScope.TableCell(
         text: String,
@@ -45,9 +50,7 @@ class Gui {
         val column4Weight = .25f // 25%
 
         LazyColumn(
-            Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 16.dp)
-                .border(2.dp, Color.Black)
+            Modifier.border(4.dp, Color.Black)
         ) {
             // Here is the header
             item {
@@ -73,67 +76,145 @@ class Gui {
     }
 
     @Composable
+    private fun VariantsTableScreen() {
+        val tableData by mutableStateOf(VariantsTable.variantsList)
+
+        val column1Weight = .1f
+        val column2Weight = .9f
+
+        LazyColumn(
+            Modifier.border(4.dp, Color.Black)
+        ) {
+            // Here is the header
+            item {
+                Row(Modifier.background(Color.Gray)) {
+                    TableCell(text = "ID", weight = column1Weight)
+                    TableCell(text = "Variant", weight = column2Weight)
+                }
+            }
+
+            // Here are all the lines of the table.
+            items(tableData) {
+                val (id, name) = it
+                Row(Modifier.fillMaxWidth()) {
+                    TableCell(text = id.toString(), weight = column1Weight)
+                    TableCell(text = name, weight = column2Weight)
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun TestingTableScreen() {
+        val tableData by mutableStateOf(TestingTable.testingList)
+
+        val column1Weight = .8f // 25%
+        val column2Weight = .2f // 25%
+
+        LazyColumn(
+            Modifier.border(4.dp, Color.Black)
+        ) {
+            // Here is the header
+            item {
+                Row(Modifier.background(Color.Gray)) {
+                    TableCell(text = "Full name", weight = column1Weight)
+                    TableCell(text = "Variant", weight = column2Weight)
+                }
+            }
+
+            // Here are all the lines of the table.
+            items(tableData) {
+                val (_, _, fullName, variant) = it
+                Row(Modifier.fillMaxWidth()) {
+                    TableCell(
+                        text = fullName,
+                        weight = column1Weight
+                    )
+                    TableCell(
+                        text = variant,
+                        weight = column2Weight
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
     @Preview
     fun App() {
-        var isStudentTableVisible by remember { mutableStateOf(false) }
         var isDialogOpen by remember { mutableStateOf(false) }
         var dialogOperation by remember { mutableStateOf("") }
 
         MaterialTheme {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.primary)
+                        .weight(0.1f)
+                        .fillMaxWidth()
                 ) {
-                    Text(
-                        modifier = Modifier.padding(
-                            start = 16.dp,
-                            top = 16.dp,
-                            end = 8.dp,
-                            bottom = 16.dp
-                        ),
-                        text = "Tables:",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp
-                    )
-                    Row {
-                        Button({ isStudentTableVisible = !isStudentTableVisible }) {
-                            Text("Students")
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        Button({ }) {
-                            Text("Variants")
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        Button({ }) {
-                            Text("Testing")
-                        }
+                    OutlinedButton({
+                        isStudentTableVisible = true
+                        isVariantsTableVisible = false
+                        isTestingTableVisible = false
+                    }) {
+                        Text("Students")
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton({
+                        isStudentTableVisible = false
+                        isVariantsTableVisible = true
+                        isTestingTableVisible = false
+                    }) {
+                        Text("Variants")
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton({
+                        isStudentTableVisible = false
+                        isVariantsTableVisible = false
+                        isTestingTableVisible = true
+                    }) {
+                        Text("Testing")
                     }
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxWidth().weight(0.8f)
                 ) {
-                    Row(modifier = Modifier.weight(0.85f)) {
-                        if (isStudentTableVisible) {
-                            StudentsTableScreen()
-                        }
+                    if (isStudentTableVisible) {
+                        StudentsTableScreen()
+                    } else if (isVariantsTableVisible) {
+                        VariantsTableScreen()
+                    } else if (isTestingTableVisible) {
+                        TestingTableScreen()
                     }
-                    Row(modifier = Modifier.weight(0.15f)) {
-                        if (isStudentTableVisible) {
-                            Button(
-                                onClick = {
-                                    isDialogOpen = true
-                                    dialogOperation = "add"
-                                },
-                                modifier = Modifier.padding(16.dp)
-                            ) {
-                                Text("Add")
-                            }
+                }
 
-                            if (isDialogOpen) {
-                                if (dialogOperation == "add") {
-                                    openAddDialog(onOpenDialog = { isDialogOpen = false })
-                                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.1f)
+                        .background(MaterialTheme.colors.primary),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isStudentTableVisible) {
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                isDialogOpen = true
+                                dialogOperation = "add"
+                            },
+                        ) {
+                            Text("Add")
+                        }
+
+                        if (isDialogOpen) {
+                            if (dialogOperation == "add") {
+                                openAddStudentDialog(onOpenDialog = { isDialogOpen = false })
                             }
                         }
                     }
@@ -143,7 +224,7 @@ class Gui {
     }
 
     @Composable
-    private fun openAddDialog(onOpenDialog: () -> Unit) {
+    private fun openAddStudentDialog(onOpenDialog: () -> Unit) {
         var newFirstname by remember { mutableStateOf("") }
         var newLastname by remember { mutableStateOf("") }
         var newPatronymic by remember { mutableStateOf("") }
@@ -227,7 +308,14 @@ class Gui {
     }
 
     fun launchMainScreen() = application {
-        Window(onCloseRequest = ::exitApplication) {
+        Window(
+            onCloseRequest = ::exitApplication,
+            state = WindowState(
+                placement = WindowPlacement.Floating,
+                position = WindowPosition(50.dp, 50.dp),
+                size = DpSize(900.dp, 700.dp),
+            )
+        ) {
             App()
         }
     }
