@@ -185,17 +185,20 @@ class Gui {
                 OutlinedTextField(
                     value = newFirstname,
                     onValueChange = { newFirstname = it },
-                    label = { Text("First name") }
+                    label = { Text("First name") },
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = newLastname,
                     onValueChange = { newLastname = it },
-                    label = { Text("Last name") }
+                    label = { Text("Last name") },
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = newPatronymic,
                     onValueChange = { newPatronymic = it },
-                    label = { Text("Patronymic (if you have it)") }
+                    label = { Text("Patronymic (if you have it)") },
+                    singleLine = true
                 )
                 Button(
                     onClick = onAddClick,
