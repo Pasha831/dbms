@@ -179,6 +179,7 @@ class Gui {
     @Composable
     @Preview
     fun App() {
+//        TODO: isDialogOpen & dialogOperation could be lifted in global scope
         var isDialogOpen by remember { mutableStateOf(false) }
         var dialogOperation by remember { mutableStateOf("") }
 
@@ -263,6 +264,35 @@ class Gui {
                                 openAddStudentDialog(onOpenDialog = { isDialogOpen = false })
                             } else if (dialogOperation == "find") {
                                 openFindStudentDialog(onOpenDialog = { isDialogOpen = false })
+                            }
+                        }
+                    } else if (isVariantsTableVisible) {
+                        // TODO: somehow compress redundant and repetitive code!
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                isDialogOpen = true
+                                dialogOperation = "add"
+                            },
+                        ) {
+                            Text("Add")
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                isDialogOpen = true
+                                dialogOperation = "find"
+                            },
+                        ) {
+                            Text("Find")
+                        }
+                        // To here...
+
+                        if (isDialogOpen) {
+                            if (dialogOperation == "add") {
+                                openAddVariantDialog(onOpenDialog = { isDialogOpen = false })
+                            } else if (dialogOperation == "find") {
+                                openFindVariantDialog(onOpenDialog = { isDialogOpen = false })
                             }
                         }
                     }
@@ -411,6 +441,143 @@ class Gui {
                     } else {
                         Text(
                             "There is no person with $personId id!",
+                            color = Color(0xFFFF0000)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun openAddVariantDialog(onOpenDialog: () -> Unit) {
+        var newVariantName by remember { mutableStateOf("") }
+
+        var isOperationSuccessful by remember { mutableStateOf(false) }
+        var isMessageVisible by remember { mutableStateOf(false) }
+
+        val onAddClick:() -> Unit = {
+            if (newVariantName.isEmpty()) {
+                isOperationSuccessful = false
+            } else {
+                if (newVariantName in VariantsTable.variantsList.map { it.name }) {
+                    isOperationSuccessful = false
+                } else {
+                    VariantsTable.variantsList.add(
+                        VariantsTable.Variant(
+                            id = VariantsTable.currentId++,
+                            name = newVariantName
+                        )
+                    )
+                    isOperationSuccessful = true
+                }
+            }
+
+            isMessageVisible = true
+            Timer().schedule(if (isOperationSuccessful) 5000 else 2000) {
+                isMessageVisible = false
+            }
+        }
+
+        Dialog(
+            title = "New variant",
+            onCloseRequest = onOpenDialog,
+            state = rememberDialogState(position = WindowPosition(Alignment.Center))
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    value = newVariantName,
+                    onValueChange = { newVariantName = it },
+                    label = { Text("Variant name") },
+                    singleLine = true
+                )
+                Button(
+                    onClick = onAddClick,
+                    modifier = Modifier.width(280.dp)
+                ) {
+                    Text("Add new variant")
+                }
+
+                AnimatedVisibility(
+                    visible = isMessageVisible,
+                ) {
+                    if (isOperationSuccessful) {
+                        Text(
+                            "New variant $newVariantName added!",
+                            color = Color(0xFF33CC00)
+                        )
+                    } else {
+                        Text(
+                            // TODO: fix real-time changing text (just save it separately)
+                            "Variant $newVariantName already exits!",
+                            color = Color(0xFFFF0000)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun openFindVariantDialog(onOpenDialog: () -> Unit) {
+        var variantId by remember { mutableStateOf("") }
+        var foundedVariant by mutableStateOf<VariantsTable.Variant?>(null)
+
+        var isOperationSuccessful by remember { mutableStateOf(false) }
+        var isMessageVisible by remember { mutableStateOf(false) }
+
+        val onFindClick:() -> Unit = {
+            if (variantId.isEmpty()) {
+                isOperationSuccessful = false
+            } else {
+                foundedVariant = VariantsTable.variantsList.find { it.id == variantId.toInt() }
+                isOperationSuccessful = (foundedVariant != null)
+            }
+
+            isMessageVisible = true
+            Timer().schedule(if (isOperationSuccessful) 5000 else 2000) {
+                isMessageVisible = false
+            }
+        }
+
+        Dialog(
+            title = "Find variant",
+            onCloseRequest = onOpenDialog,
+            state = rememberDialogState(position = WindowPosition(Alignment.Center))
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    value = variantId,
+                    onValueChange = { variantId = it },
+                    label = { Text("Variant ID") },
+                    singleLine = true
+                )
+                Button(
+                    onClick = onFindClick,
+                    modifier = Modifier.width(280.dp)
+                ) {
+                    Text("Find variant")
+                }
+
+                AnimatedVisibility(
+                    visible = isMessageVisible
+                ) {
+                    if (isOperationSuccessful) {
+                        Text(
+                            text = "${foundedVariant?.getVariantName()}",
+                            style = MaterialTheme.typography.h6
+                        )
+                    } else {
+                        Text(
+                            "There is no variant with $variantId id!",
                             color = Color(0xFFFF0000)
                         )
                     }
