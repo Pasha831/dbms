@@ -291,6 +291,17 @@ class Gui {
                                 openFindVariantDialog(onOpenDialog = { isDialogOpen = false })
                             }
                         }
+                    } else if (isTestingTableVisible) {
+                        addInstrumentationButtons(
+                            add = false,
+                            find = true
+                        )
+
+                        if (isDialogOpen) {
+                            if (dialogOperation == "find") {
+                                openFindTestingDialog(onOpenDialog = { isDialogOpen = false })
+                            }
+                        }
                     }
                 }
             }
@@ -580,6 +591,79 @@ class Gui {
                     } else {
                         Text(
                             "There is no variant with $variantId id!",
+                            color = Color(0xFFFF0000),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun openFindTestingDialog(onOpenDialog: () -> Unit) {
+        var fullName by remember { mutableStateOf("") }
+        var foundedTestingPerson by mutableStateOf<TestingTable.Testing?>(null)
+
+        var isOperationSuccessful by remember { mutableStateOf(false) }
+        var isMessageVisible by remember { mutableStateOf(false) }
+
+        val onFindClick:() -> Unit = {
+            if (fullName.isEmpty()) {
+                isOperationSuccessful = false
+            } else {
+                val tempFullName = fullName.split(" ").toMutableList()
+                if (tempFullName.size == 2) {
+                    tempFullName.add("-")
+                }
+
+                foundedTestingPerson = TestingTable.testingList.find {
+                    it.studentFullName == tempFullName.joinToString(" ")
+                }
+                isOperationSuccessful = (foundedTestingPerson != null)
+            }
+
+            isMessageVisible = true
+            Timer().schedule(if (isOperationSuccessful) 5000 else 2000) {
+                isMessageVisible = false
+            }
+        }
+
+        Dialog(
+            title = "Find person's variant",
+            onCloseRequest = onOpenDialog,
+            state = rememberDialogState(position = WindowPosition(Alignment.Center))
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Person full name") },
+                    singleLine = true
+                )
+                Button(
+                    onClick = onFindClick,
+                    modifier = Modifier.width(280.dp)
+                ) {
+                    Text("Find variant")
+                }
+
+                AnimatedVisibility(
+                    visible = isMessageVisible
+                ) {
+                    if (isOperationSuccessful) {
+                        Text(
+                            text = "${foundedTestingPerson?.variantName}",
+                            style = MaterialTheme.typography.h6,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            "There is no $fullName student inside students table!",
                             color = Color(0xFFFF0000),
                             textAlign = TextAlign.Center
                         )
