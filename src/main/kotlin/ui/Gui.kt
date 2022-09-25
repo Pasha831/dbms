@@ -64,7 +64,7 @@ class Gui {
         )
     }
 
-    fun <T> SnapshotStateList<T>.swapList(newList: MutableList<T>) {
+    private fun <T> SnapshotStateList<T>.swapList(newList: MutableList<T>) {
         clear()
         addAll(newList)
     }
