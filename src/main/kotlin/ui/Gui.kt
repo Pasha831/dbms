@@ -29,8 +29,8 @@ class Gui {
     private var isVariantsTableVisible by mutableStateOf(false)
     private var isTestingTableVisible by mutableStateOf(false)
 
-    private var isDialogOpen by remember { mutableStateOf(false) }
-    private var dialogOperation by remember { mutableStateOf("") }
+    private var isDialogOpen by mutableStateOf(false)
+    private var dialogOperation by mutableStateOf("")
 
     @Composable
     private fun RowScope.TableCell(
@@ -368,12 +368,14 @@ class Gui {
                     if (isOperationSuccessful) {
                         Text(
                             "New person added!",
-                            color = Color(0xFF33CC00)
+                            color = Color(0xFF33CC00),
+                            textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
                             "Person must have both first and last name!",
-                            color = Color(0xFFFF0000)
+                            color = Color(0xFFFF0000),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -432,12 +434,14 @@ class Gui {
                     if (isOperationSuccessful) {
                         Text(
                             text = "${foundedPerson?.getStudentName()}",
-                            style = MaterialTheme.typography.h6
+                            style = MaterialTheme.typography.h6,
+                            textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
                             "There is no person with $personId id!",
-                            color = Color(0xFFFF0000)
+                            color = Color(0xFFFF0000),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -504,12 +508,14 @@ class Gui {
                     if (isOperationSuccessful) {
                         Text(
                             "New variant $newVariantName added!",
-                            color = Color(0xFF33CC00)
+                            color = Color(0xFF33CC00),
+                            textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
                             "Variant $newVariantName already exits!",
-                            color = Color(0xFFFF0000)
+                            color = Color(0xFFFF0000),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -568,12 +574,14 @@ class Gui {
                     if (isOperationSuccessful) {
                         Text(
                             text = "${foundedVariant?.getVariantName()}",
-                            style = MaterialTheme.typography.h6
+                            style = MaterialTheme.typography.h6,
+                            textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
                             "There is no variant with $variantId id!",
-                            color = Color(0xFFFF0000)
+                            color = Color(0xFFFF0000),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
