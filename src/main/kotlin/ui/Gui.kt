@@ -248,10 +248,21 @@ class Gui {
                         ) {
                             Text("Add")
                         }
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                isDialogOpen = true
+                                dialogOperation = "find"
+                            },
+                        ) {
+                            Text("Find")
+                        }
 
                         if (isDialogOpen) {
                             if (dialogOperation == "add") {
                                 openAddStudentDialog(onOpenDialog = { isDialogOpen = false })
+                            } else if (dialogOperation == "find") {
+                                openFindStudentDialog(onOpenDialog = { isDialogOpen = false })
                             }
                         }
                     }
@@ -296,7 +307,7 @@ class Gui {
             state = rememberDialogState(position = WindowPosition(Alignment.Center))
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().width(250.dp),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -344,12 +355,76 @@ class Gui {
         }
     }
 
+    @Composable
+    private fun openFindStudentDialog(onOpenDialog: () -> Unit) {
+        var personId by remember { mutableStateOf("") }
+        var foundedPerson by mutableStateOf<StudentsTable.Student?>(null)
+
+        var isOperationSuccessful by remember { mutableStateOf(false) }
+        var isMessageVisible by remember { mutableStateOf(false) }
+
+        val onFindClick:() -> Unit = {
+            if (personId.isEmpty()) {
+                isOperationSuccessful = false
+            } else {
+                foundedPerson = StudentsTable.studentsList.find { it.id == personId.toInt() }
+                isOperationSuccessful = (foundedPerson != null)
+            }
+
+            isMessageVisible = true
+            Timer().schedule(if (isOperationSuccessful) 5000 else 2000) {
+                isMessageVisible = false
+            }
+        }
+
+        Dialog(
+            title = "Find person",
+            onCloseRequest = onOpenDialog,
+            state = rememberDialogState(position = WindowPosition(Alignment.Center))
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    value = personId,
+                    onValueChange = { personId = it },
+                    label = { Text("Person ID") },
+                    singleLine = true
+                )
+                Button(
+                    onClick = onFindClick,
+                    modifier = Modifier.width(280.dp)
+                ) {
+                    Text("Find person")
+                }
+
+                AnimatedVisibility(
+                    visible = isMessageVisible
+                ) {
+                    if (isOperationSuccessful) {
+                        Text(
+                            text = "${foundedPerson?.getStudentName()}",
+                            style = MaterialTheme.typography.h6
+                        )
+                    } else {
+                        Text(
+                            "There is no person with $personId id!",
+                            color = Color(0xFFFF0000)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun launchMainScreen() = application {
         Window(
             onCloseRequest = ::exitApplication,
             state = WindowState(
                 placement = WindowPlacement.Floating,
-                position = WindowPosition(50.dp, 50.dp),
+                position = WindowPosition(Alignment.Center),
                 size = DpSize(900.dp, 700.dp),
             )
         ) {
