@@ -25,9 +25,12 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 class Gui {
-    private var isStudentTableVisible by mutableStateOf(true)
+    private var isStudentTableVisible by mutableStateOf(true)  // starting table
     private var isVariantsTableVisible by mutableStateOf(false)
     private var isTestingTableVisible by mutableStateOf(false)
+
+    private var isDialogOpen by remember { mutableStateOf(false) }
+    private var dialogOperation by remember { mutableStateOf("") }
 
     @Composable
     private fun RowScope.TableCell(
@@ -177,12 +180,47 @@ class Gui {
     }
 
     @Composable
+    private fun addInstrumentationButtons(
+        add: Boolean = false,
+        find: Boolean = false
+    ) {
+        if (add) {
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(
+                onClick = {
+                    isDialogOpen = true
+                    dialogOperation = "add"
+                },
+            ) {
+                Text("Add")
+            }
+        }
+        if (find) {
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(
+                onClick = {
+                    isDialogOpen = true
+                    dialogOperation = "find"
+                },
+            ) {
+                Text("Find")
+            }
+        }
+    }
+
+    private fun switchTablesVisibility(
+        students: Boolean = false,
+        variants: Boolean = false,
+        testing: Boolean = false
+    ) {
+        isStudentTableVisible = students
+        isVariantsTableVisible = variants
+        isTestingTableVisible = testing
+    }
+
+    @Composable
     @Preview
     fun App() {
-//        TODO: isDialogOpen & dialogOperation could be lifted in global scope
-        var isDialogOpen by remember { mutableStateOf(false) }
-        var dialogOperation by remember { mutableStateOf("") }
-
         MaterialTheme {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -195,27 +233,15 @@ class Gui {
                         .weight(0.1f)
                         .fillMaxWidth()
                 ) {
-                    OutlinedButton({
-                        isStudentTableVisible = true
-                        isVariantsTableVisible = false
-                        isTestingTableVisible = false
-                    }) {
+                    OutlinedButton({ switchTablesVisibility(students = true) }) {
                         Text("Students")
                     }
                     Spacer(Modifier.width(8.dp))
-                    OutlinedButton({
-                        isStudentTableVisible = false
-                        isVariantsTableVisible = true
-                        isTestingTableVisible = false
-                    }) {
+                    OutlinedButton({ switchTablesVisibility(variants = true) }) {
                         Text("Variants")
                     }
                     Spacer(Modifier.width(8.dp))
-                    OutlinedButton({
-                        isStudentTableVisible = false
-                        isVariantsTableVisible = false
-                        isTestingTableVisible = true
-                    }) {
+                    OutlinedButton({ switchTablesVisibility(testing = true) }) {
                         Text("Testing")
                     }
                 }
@@ -240,24 +266,10 @@ class Gui {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (isStudentTableVisible) {
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(
-                            onClick = {
-                                isDialogOpen = true
-                                dialogOperation = "add"
-                            },
-                        ) {
-                            Text("Add")
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(
-                            onClick = {
-                                isDialogOpen = true
-                                dialogOperation = "find"
-                            },
-                        ) {
-                            Text("Find")
-                        }
+                        addInstrumentationButtons(
+                            add = true,
+                            find = true
+                        )
 
                         if (isDialogOpen) {
                             if (dialogOperation == "add") {
@@ -267,26 +279,10 @@ class Gui {
                             }
                         }
                     } else if (isVariantsTableVisible) {
-                        // TODO: somehow compress redundant and repetitive code!
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(
-                            onClick = {
-                                isDialogOpen = true
-                                dialogOperation = "add"
-                            },
-                        ) {
-                            Text("Add")
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(
-                            onClick = {
-                                isDialogOpen = true
-                                dialogOperation = "find"
-                            },
-                        ) {
-                            Text("Find")
-                        }
-                        // To here...
+                        addInstrumentationButtons(
+                            add = true,
+                            find = true
+                        )
 
                         if (isDialogOpen) {
                             if (dialogOperation == "add") {
@@ -512,7 +508,6 @@ class Gui {
                         )
                     } else {
                         Text(
-                            // TODO: fix real-time changing text (just save it separately)
                             "Variant $newVariantName already exits!",
                             color = Color(0xFFFF0000)
                         )
