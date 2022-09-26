@@ -107,6 +107,7 @@ class Gui {
                         weight = column5Weight,
                         onClick = {
                             StudentsTable.studentsList.removeIf { student -> student.id == id }
+                            StudentsTable.refresh()
                             tableData.swapList(StudentsTable.studentsList)
                         }
                     )
@@ -329,6 +330,7 @@ class Gui {
                         patronymic = newPatronymic.ifEmpty { "-" }
                     )
                 )
+                StudentsTable.refresh()
                 isOperationSuccessful = true
             }
 
