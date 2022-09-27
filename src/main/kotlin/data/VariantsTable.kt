@@ -1,5 +1,6 @@
 package data
 
+import DbConstants
 import java.io.File
 
 class VariantsTable {
@@ -7,11 +8,14 @@ class VariantsTable {
         var currentId = 1
         val variantsList = mutableListOf<Variant>()
 
-        fun addNewVariant(name: String) {
+        fun addNewVariant(name: String, isDefaultVariant: Boolean = false) {
             val newVariant = Variant(
                 id = currentId++,
                 name = name
             )
+            if (!isDefaultVariant) {
+                DbConstants.numberOfVariants++
+            }
             variantsList.add(newVariant)
         }
 
@@ -51,7 +55,7 @@ class VariantsTable {
     fun inflate() {
         // This naming only for based variants
         for (id in 1..DbConstants.numberOfVariants) {
-            addNewVariant("variant$id")
+            addNewVariant("variant$id", isDefaultVariant = true)
         }
         refresh()
     }
