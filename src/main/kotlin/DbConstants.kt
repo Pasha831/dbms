@@ -6,5 +6,6 @@ object DbConstants {
     const val studentsTablePath = "$tablesDirectory\\students.txt"
     const val variantsTablePath = "$tablesDirectory\\variants.txt"
     const val testingTablePath = "$tablesDirectory\\testing.txt"
-    var numberOfVariants = 5
+    private const val constNumberOfVariants = 5
+    var numberOfVariants = constNumberOfVariants
 }

@@ -27,6 +27,49 @@ class StudentsTable {
     companion object {
         val studentsList = mutableListOf<Student>()
         var currentId = 1
+
+        fun refresh() {
+            val outputStream = File(DbConstants.studentsTablePath).printWriter()
+
+            outputStream.use { out ->
+                studentsList.forEach {
+                    out.println(it)
+                }
+            }
+        }
+
+        /**
+         * Add new student both to Students and Testing tables
+         */
+        fun addNewStudent(
+            newFirstname: String,
+            newLastname: String,
+            newPatronymic: String
+        ) {
+            val newStudent = Student(
+                id = currentId++,
+                firstname = newFirstname,
+                lastname = newLastname,
+                patronymic = newPatronymic.ifEmpty { "-" }
+            )
+            studentsList.add(newStudent)
+            refresh()
+
+            TestingTable.addNewTesting(
+                student = newStudent
+            )
+        }
+
+        fun deleteStudent(id: Int) {
+            studentsList.removeIf { it.id == id }
+            refresh()
+
+            TestingTable.deleteTesting(id)
+        }
+
+        fun findStudent(studentId: Int): Student? {
+            return studentsList.find { it.id == studentId }
+        }
     }
 
     /**
@@ -35,34 +78,23 @@ class StudentsTable {
      * Creates directory with tables, reads input file and makes output table
      */
     fun inflate(filePath: String) {
-        studentsList.clear()
-
         // create directory with tables, if it doesn't exist
         File(DbConstants.tablesDirectory).mkdir()
 
         // input and output streams of information
         val inputStream = File(filePath).inputStream()
-        val outputStream = File(DbConstants.studentsTablePath).printWriter()
 
         // read each line, split it and fill studentsList
         inputStream.bufferedReader().forEachLine {
             val splitedLine = it.split(" ")
 
-            val newStudent = Student(
-                id = currentId++,
-                firstname =  splitedLine[0],
-                lastname =  splitedLine[1],
-                patronymic =  splitedLine[2],
+            addNewStudent(
+                newFirstname = splitedLine[0],
+                newLastname = splitedLine[1],
+                newPatronymic = splitedLine[2]
             )
-
-            studentsList.add(newStudent)
         }
 
-        // output each row of students table into the table
-        outputStream.use { out ->
-            studentsList.forEach {
-                out.println(it)
-            }
-        }
+        refresh()
     }
 }
