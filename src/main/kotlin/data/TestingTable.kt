@@ -31,6 +31,14 @@ class TestingTable {
             testingList.add(newTesting)
             refresh()
         }
+
+        fun findTesting(fullName: String): Testing? {
+            val tempFullName = fullName.split(" ").toMutableList()
+            if (tempFullName.size == 2) {
+                tempFullName.add("-")
+            }
+            return testingList.find { it.studentFullName == tempFullName.joinToString(" ") }
+        }
     }
 
     data class Testing(

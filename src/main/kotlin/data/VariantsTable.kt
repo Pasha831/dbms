@@ -19,6 +19,10 @@ class VariantsTable {
             return variantsList[(studentId - 1) % DbConstants.numberOfVariants]
         }
 
+        fun findVariant(variantId: Int): Variant? {
+            return variantsList.find { it.id == variantId }
+        }
+
         fun refresh() {
             // output stream of information
             val outputStream = File(DbConstants.variantsTablePath).printWriter()

@@ -64,6 +64,10 @@ class StudentsTable {
             studentsList.removeIf { it.id == id }
             refresh()
         }
+
+        fun findStudent(studentId: Int): Student? {
+            return studentsList.find { it.id == studentId }
+        }
     }
 
     /**
