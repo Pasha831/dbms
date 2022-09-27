@@ -10,8 +10,8 @@ fun main() {
     val variantsTable = VariantsTable()
     val testingTable = TestingTable()
 
-    studentsTable.inflate(namesPath)
     variantsTable.inflate()
+    studentsTable.inflate(namesPath)
     testingTable.inflate()
 
     val gui = Gui()
