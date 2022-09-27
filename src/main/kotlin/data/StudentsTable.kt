@@ -59,6 +59,11 @@ class StudentsTable {
                 student = newStudent
             )
         }
+
+        fun deleteStudent(id: Int) {
+            studentsList.removeIf { it.id == id }
+            refresh()
+        }
     }
 
     /**
