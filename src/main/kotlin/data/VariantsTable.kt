@@ -6,6 +6,30 @@ class VariantsTable {
     companion object {
         var currentId = 1
         val variantsList = mutableListOf<Variant>()
+
+        fun addNewVariant(name: String) {
+            val newVariant = Variant(
+                id = currentId++,
+                name = name
+            )
+            variantsList.add(newVariant)
+        }
+
+        fun getVariant(studentId: Int): Variant {
+            return variantsList[(studentId - 1) % DbConstants.numberOfVariants]
+        }
+
+        fun refresh() {
+            // output stream of information
+            val outputStream = File(DbConstants.variantsTablePath).printWriter()
+
+            // output each row of students table into the table
+            outputStream.use { out ->
+                variantsList.forEach {
+                    out.println(it)
+                }
+            }
+        }
     }
 
     data class Variant(
@@ -21,28 +45,10 @@ class VariantsTable {
     }
 
     fun inflate() {
-        VariantsTable.variantsList.clear()
-
-        // create directory with tables, if it doesn't exist
-        File(DbConstants.tablesDirectory).mkdir()
-
-        // output stream of information
-        val outputStream = File(DbConstants.variantsTablePath).printWriter()
-
+        // This naming only for based variants
         for (id in 1..DbConstants.numberOfVariants) {
-            val newVariant = VariantsTable.Variant(
-                id = currentId,
-                name = "variant${currentId++}"
-            )
-
-            VariantsTable.variantsList.add(newVariant)
+            addNewVariant("variant$id")
         }
-
-        // output each row of students table into the table
-        outputStream.use { out ->
-            VariantsTable.variantsList.forEach {
-                out.println(it)
-            }
-        }
+        refresh()
     }
 }
