@@ -106,8 +106,7 @@ class Gui {
                         text = "Delete",
                         weight = column5Weight,
                         onClick = {
-                            StudentsTable.studentsList.removeIf { student -> student.id == id }
-                            StudentsTable.refresh()
+                            StudentsTable.deleteStudent(id)
                             tableData.swapList(StudentsTable.studentsList)
                         }
                     )
@@ -322,15 +321,11 @@ class Gui {
             if (newFirstname.isEmpty() || newLastname.isEmpty()) {
                 isOperationSuccessful = false
             } else {
-                StudentsTable.studentsList.add(
-                    StudentsTable.Student(
-                        StudentsTable.currentId++,
-                        firstname = newFirstname,
-                        lastname = newLastname,
-                        patronymic = newPatronymic.ifEmpty { "-" }
-                    )
+                StudentsTable.addNewStudent(
+                    newFirstname = newFirstname,
+                    newLastname = newLastname,
+                    newPatronymic = newPatronymic.ifEmpty { "-" }
                 )
-                StudentsTable.refresh()
                 isOperationSuccessful = true
             }
 
@@ -408,7 +403,7 @@ class Gui {
             if (personId.isEmpty()) {
                 isOperationSuccessful = false
             } else {
-                foundedPerson = StudentsTable.studentsList.find { it.id == personId.toInt() }
+                foundedPerson = StudentsTable.findStudent(personId.toInt())
                 isOperationSuccessful = (foundedPerson != null)
             }
 
@@ -476,12 +471,7 @@ class Gui {
                 if (newVariantName in VariantsTable.variantsList.map { it.name }) {
                     isOperationSuccessful = false
                 } else {
-                    VariantsTable.variantsList.add(
-                        VariantsTable.Variant(
-                            id = VariantsTable.currentId++,
-                            name = newVariantName
-                        )
-                    )
+                    VariantsTable.addNewVariant(newVariantName)
                     isOperationSuccessful = true
                 }
             }
@@ -548,7 +538,7 @@ class Gui {
             if (variantId.isEmpty()) {
                 isOperationSuccessful = false
             } else {
-                foundedVariant = VariantsTable.variantsList.find { it.id == variantId.toInt() }
+                foundedVariant = VariantsTable.findVariant(variantId.toInt())
                 isOperationSuccessful = (foundedVariant != null)
             }
 
@@ -614,14 +604,7 @@ class Gui {
             if (fullName.isEmpty()) {
                 isOperationSuccessful = false
             } else {
-                val tempFullName = fullName.split(" ").toMutableList()
-                if (tempFullName.size == 2) {
-                    tempFullName.add("-")
-                }
-
-                foundedTestingPerson = TestingTable.testingList.find {
-                    it.studentFullName == tempFullName.joinToString(" ")
-                }
+                foundedTestingPerson = TestingTable.findTesting(fullName = fullName)
                 isOperationSuccessful = (foundedTestingPerson != null)
             }
 
