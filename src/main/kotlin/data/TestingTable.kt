@@ -39,6 +39,11 @@ class TestingTable {
             }
             return testingList.find { it.studentFullName == tempFullName.joinToString(" ") }
         }
+
+        fun deleteTesting(id: Int) {
+            testingList.removeIf { it.studentId == id }
+            refresh()
+        }
     }
 
     data class Testing(

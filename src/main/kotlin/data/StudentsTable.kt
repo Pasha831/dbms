@@ -63,6 +63,8 @@ class StudentsTable {
         fun deleteStudent(id: Int) {
             studentsList.removeIf { it.id == id }
             refresh()
+
+            TestingTable.deleteTesting(id)
         }
 
         fun findStudent(studentId: Int): Student? {
