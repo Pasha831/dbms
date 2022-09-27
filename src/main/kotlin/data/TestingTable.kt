@@ -6,6 +6,31 @@ import java.io.File
 class TestingTable {
     companion object {
         val testingList = mutableListOf<Testing>()
+
+        fun refresh() {
+            val outputStream = File(DbConstants.testingTablePath).printWriter()
+
+            outputStream.use { out ->
+                testingList.forEach {
+                    out.println(it)
+                }
+            }
+        }
+
+        fun addNewTesting(
+            student: StudentsTable.Student
+        ) {
+            val variant = VariantsTable.getVariant(student.id)
+            val newTesting = Testing(
+                studentId = student.id,
+                variantId = variant.id,
+                studentFullName = student.getStudentName(),
+                variantName = variant.getVariantName()
+            )
+
+            testingList.add(newTesting)
+            refresh()
+        }
     }
 
     data class Testing(
@@ -20,32 +45,13 @@ class TestingTable {
     }
 
     fun inflate() {
-        TestingTable.testingList.clear()
-
         // create directory with tables, if it doesn't exist
         File(DbConstants.tablesDirectory).mkdir()
 
-        // output stream of information
-        val outputStream = File(DbConstants.testingTablePath).printWriter()
-
         for (student in StudentsTable.studentsList) {
-            val newVariantId = VariantsTable.variantsList[(student.id - 1) % DbConstants.numberOfVariants].id
-
-            val newTesting = TestingTable.Testing(
-                studentId = student.id,
-                variantId = newVariantId,
-                studentFullName = StudentsTable.studentsList.find { it.id == student.id }!!.getStudentName(),
-                variantName = VariantsTable.variantsList.find { it.id == newVariantId }!!.getVariantName()
-            )
-
-            TestingTable.testingList.add(newTesting)
+            addNewTesting(student = student)
         }
 
-        // output each row of students table into the table
-        outputStream.use { out ->
-            TestingTable.testingList.forEach {
-                out.println(it)
-            }
-        }
+        refresh()
     }
 }
