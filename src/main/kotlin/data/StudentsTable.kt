@@ -37,6 +37,28 @@ class StudentsTable {
                 }
             }
         }
+
+        /**
+         * Add new student both to Students and Testing tables
+         */
+        fun addNewStudent(
+            newFirstname: String,
+            newLastname: String,
+            newPatronymic: String
+        ) {
+            val newStudent = Student(
+                id = currentId++,
+                firstname = newFirstname,
+                lastname = newLastname,
+                patronymic = newPatronymic.ifEmpty { "-" }
+            )
+            studentsList.add(newStudent)
+            refresh()
+
+            TestingTable.addNewTesting(
+                student = newStudent
+            )
+        }
     }
 
     /**
@@ -55,14 +77,11 @@ class StudentsTable {
         inputStream.bufferedReader().forEachLine {
             val splitedLine = it.split(" ")
 
-            val newStudent = Student(
-                id = currentId++,
-                firstname =  splitedLine[0],
-                lastname =  splitedLine[1],
-                patronymic =  splitedLine[2],
+            addNewStudent(
+                newFirstname = splitedLine[0],
+                newLastname = splitedLine[1],
+                newPatronymic = splitedLine[2]
             )
-
-            studentsList.add(newStudent)
         }
 
         refresh()
