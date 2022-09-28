@@ -1,5 +1,6 @@
 package ui
 
+import DbConstants
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
@@ -683,6 +684,16 @@ class Gui {
         }
     }
 
+    private fun inflateNewDatabase() {
+        DbConstants.createDatabaseFiles()
+
+        VariantsTable.inflate(fromScratch = true)
+        StudentsTable.inflate(fromScratch = true)
+        TestingTable.inflate(fromScratch = true)
+
+        switchTablesVisibility(students = true)
+    }
+
     @Composable
     private fun StartScreen() {
         MaterialTheme {
@@ -697,13 +708,16 @@ class Gui {
                 )
                 Row {
                     Button(
-                        onClick = { switchScreensVisibility(tablesScreen = true) }
+                        onClick = {
+                            inflateNewDatabase()
+                            switchScreensVisibility(tablesScreen = true)
+                        }
                     ) {
                         Text("Create database")
                     }
                     Spacer(Modifier.width(16.dp))
                     OutlinedButton(
-//                        TODO: implement opening the existing DB
+//                      TODO: implement opening the existing DB
                         onClick = {}
                     ) {
                         Text("Open existing")
