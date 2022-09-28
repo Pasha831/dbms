@@ -70,31 +70,26 @@ class StudentsTable {
         fun findStudent(studentId: Int): Student? {
             return studentsList.find { it.id == studentId }
         }
-    }
 
-    /**
-     * Inflates students table previously clearing studentsList.
-     *
-     * Creates directory with tables, reads input file and makes output table
-     */
-    fun inflate(filePath: String) {
-        // create directory with tables, if it doesn't exist
-        File(DbConstants.tablesDirectory).mkdir()
+        fun inflate(filePath: String) {
+            // create directory with tables, if it doesn't exist
+            File(DbConstants.tablesDirectory).mkdir()
 
-        // input and output streams of information
-        val inputStream = File(filePath).inputStream()
+            // input and output streams of information
+            val inputStream = File(filePath).inputStream()
 
-        // read each line, split it and fill studentsList
-        inputStream.bufferedReader().forEachLine {
-            val splitedLine = it.split(" ")
+            // read each line, split it and fill studentsList
+            inputStream.bufferedReader().forEachLine {
+                val splitedLine = it.split(" ")
 
-            addNewStudent(
-                newFirstname = splitedLine[0],
-                newLastname = splitedLine[1],
-                newPatronymic = splitedLine[2]
-            )
+                addNewStudent(
+                    newFirstname = splitedLine[0],
+                    newLastname = splitedLine[1],
+                    newPatronymic = splitedLine[2]
+                )
+            }
+
+            refresh()
         }
-
-        refresh()
     }
 }

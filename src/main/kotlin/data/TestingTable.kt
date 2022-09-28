@@ -44,6 +44,17 @@ class TestingTable {
             testingList.removeIf { it.studentId == id }
             refresh()
         }
+
+        fun inflate() {
+            // create directory with tables, if it doesn't exist
+            File(DbConstants.tablesDirectory).mkdir()
+
+            for (student in StudentsTable.studentsList) {
+                addNewTesting(student = student)
+            }
+
+            refresh()
+        }
     }
 
     data class Testing(
@@ -55,16 +66,5 @@ class TestingTable {
         override fun toString(): String {
             return "$studentFullName $variantName"
         }
-    }
-
-    fun inflate() {
-        // create directory with tables, if it doesn't exist
-        File(DbConstants.tablesDirectory).mkdir()
-
-        for (student in StudentsTable.studentsList) {
-            addNewTesting(student = student)
-        }
-
-        refresh()
     }
 }

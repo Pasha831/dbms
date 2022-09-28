@@ -38,6 +38,14 @@ class VariantsTable {
                 }
             }
         }
+
+        fun inflate() {
+            // This naming only for based variants
+            for (id in 1..DbConstants.numberOfVariants) {
+                addNewVariant("variant$id", isDefaultVariant = true)
+            }
+            refresh()
+        }
     }
 
     data class Variant(
@@ -50,13 +58,5 @@ class VariantsTable {
         fun getVariantName(): String {
             return name
         }
-    }
-
-    fun inflate() {
-        // This naming only for based variants
-        for (id in 1..DbConstants.numberOfVariants) {
-            addNewVariant("variant$id", isDefaultVariant = true)
-        }
-        refresh()
     }
 }

@@ -6,13 +6,9 @@ import ui.Gui
 fun main() {
     val namesPath = "tools\\names.txt"
 
-    val studentsTable = StudentsTable()
-    val variantsTable = VariantsTable()
-    val testingTable = TestingTable()
-
-    variantsTable.inflate()
-    studentsTable.inflate(namesPath)
-    testingTable.inflate()
+    VariantsTable.inflate()
+    StudentsTable.inflate(namesPath)
+    TestingTable.inflate()
 
     val gui = Gui()
     gui.launchMainScreen()
