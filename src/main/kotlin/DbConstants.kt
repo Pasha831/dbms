@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat
 object DbConstants {
     const val namesPath = "tools\\names.txt"
     private const val constNumberOfVariants = 5
-//    TODO: watch out for the reinitializing this variable!
     var numberOfVariants = constNumberOfVariants
     lateinit var currentDirectoryPath: String
     lateinit var studentsTablePath: String
@@ -27,5 +26,7 @@ object DbConstants {
         File(studentsTablePath)
         File(variantsTablePath)
         File(testingTablePath)
+
+        numberOfVariants = constNumberOfVariants
     }
 }
