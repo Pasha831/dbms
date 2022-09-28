@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -25,6 +27,9 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 class Gui {
+    private var isStartScreenVisible by mutableStateOf(true)
+    private var isTablesScreenVisible by mutableStateOf(false)
+
     private var isStudentTableVisible by mutableStateOf(true)  // starting table
     private var isVariantsTableVisible by mutableStateOf(false)
     private var isTestingTableVisible by mutableStateOf(false)
@@ -218,32 +223,52 @@ class Gui {
         isTestingTableVisible = testing
     }
 
+    private fun switchScreensVisibility(
+        startScreen: Boolean = false,
+        tablesScreen: Boolean = false
+    ) {
+        isStartScreenVisible = startScreen
+        isTablesScreenVisible = tablesScreen
+    }
+
     @Composable
     @Preview
-    fun App() {
+    fun TablesScreen() {
         MaterialTheme {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .background(MaterialTheme.colors.primary)
                         .weight(0.1f)
                         .fillMaxWidth()
                 ) {
-                    OutlinedButton({ switchTablesVisibility(students = true) }) {
-                        Text("Students")
+                    FloatingActionButton(
+                        onClick = { switchScreensVisibility(startScreen = true) },
+                        modifier = Modifier.padding(start = 8.dp).size(40.dp)
+                    ) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = null)
                     }
-                    Spacer(Modifier.width(8.dp))
-                    OutlinedButton({ switchTablesVisibility(variants = true) }) {
-                        Text("Variants")
+                    Row(
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        OutlinedButton({ switchTablesVisibility(students = true) }) {
+                            Text("Students")
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton({ switchTablesVisibility(variants = true) }) {
+                            Text("Variants")
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton({ switchTablesVisibility(testing = true) }) {
+                            Text("Testing")
+                        }
+                        Spacer(Modifier.width(8.dp))
                     }
-                    Spacer(Modifier.width(8.dp))
-                    OutlinedButton({ switchTablesVisibility(testing = true) }) {
-                        Text("Testing")
-                    }
+                    Spacer(Modifier.width(32.dp))
                 }
 
                 Column(
@@ -658,6 +683,36 @@ class Gui {
         }
     }
 
+    @Composable
+    private fun StartScreen() {
+        MaterialTheme {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Welcome.",
+                    style = MaterialTheme.typography.h2
+                )
+                Row {
+                    Button(
+                        onClick = { switchScreensVisibility(tablesScreen = true) }
+                    ) {
+                        Text("Create database")
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    OutlinedButton(
+//                        TODO: implement opening the existing DB
+                        onClick = {}
+                    ) {
+                        Text("Open existing")
+                    }
+                }
+            }
+        }
+    }
+
     fun launchMainScreen() = application {
         Window(
             onCloseRequest = ::exitApplication,
@@ -667,7 +722,11 @@ class Gui {
                 size = DpSize(900.dp, 700.dp),
             )
         ) {
-            App()
+            if (isStartScreenVisible) {
+                StartScreen()
+            } else if (isTablesScreenVisible) {
+                TablesScreen()
+            }
         }
     }
 }
