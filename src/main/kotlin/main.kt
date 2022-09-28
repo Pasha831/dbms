@@ -4,7 +4,7 @@ import data.VariantsTable
 import ui.Gui
 
 fun main() {
-    val namesPath = "src\\main\\resources\\names.txt"
+    val namesPath = "tools\\names.txt"
 
     val studentsTable = StudentsTable()
     val variantsTable = VariantsTable()
