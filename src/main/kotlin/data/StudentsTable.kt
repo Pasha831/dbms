@@ -1,6 +1,8 @@
 package data
 
+import DbConstants
 import java.io.File
+import java.io.FileInputStream
 
 class StudentsTable {
     /**
@@ -71,14 +73,19 @@ class StudentsTable {
             return studentsList.find { it.id == studentId }
         }
 
-        fun inflate(filePath: String) {
-            // create directory with tables, if it doesn't exist
-            File(DbConstants.tablesDirectory).mkdir()
+        fun inflate(fromScratch: Boolean = true) {
+            studentsList.clear()
+            currentId = 1
 
-            // input and output streams of information
-            val inputStream = File(filePath).inputStream()
+            // One difference: different sources of inputStream
+            lateinit var inputStream: FileInputStream
 
-            // read each line, split it and fill studentsList
+            if (fromScratch) {
+                inputStream = File(DbConstants.namesPath).inputStream()
+            } else {
+//                TODO: create specific directory with Java AWT
+            }
+
             inputStream.bufferedReader().forEachLine {
                 val splitedLine = it.split(" ")
 

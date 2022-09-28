@@ -28,10 +28,8 @@ class VariantsTable {
         }
 
         fun refresh() {
-            // output stream of information
             val outputStream = File(DbConstants.variantsTablePath).printWriter()
 
-            // output each row of students table into the table
             outputStream.use { out ->
                 variantsList.forEach {
                     out.println(it)
@@ -39,7 +37,16 @@ class VariantsTable {
             }
         }
 
-        fun inflate() {
+        fun inflate(fromScratch: Boolean = true) {
+            variantsList.clear()
+            currentId = 1
+
+            if (fromScratch) {
+
+            } else {
+
+            }
+
             // This naming only for based variants
             for (id in 1..DbConstants.numberOfVariants) {
                 addNewVariant("variant$id", isDefaultVariant = true)

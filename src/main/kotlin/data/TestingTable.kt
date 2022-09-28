@@ -45,9 +45,14 @@ class TestingTable {
             refresh()
         }
 
-        fun inflate() {
-            // create directory with tables, if it doesn't exist
-            File(DbConstants.tablesDirectory).mkdir()
+        fun inflate(fromScratch: Boolean = true) {
+            testingList.clear()
+
+            if (fromScratch) {
+
+            } else {
+
+            }
 
             for (student in StudentsTable.studentsList) {
                 addNewTesting(student = student)
