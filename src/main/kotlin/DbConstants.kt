@@ -1,11 +1,31 @@
+import java.io.File
+import java.text.SimpleDateFormat
+
 /**
  * Useful constants of the database
  */
 object DbConstants {
-    const val tablesDirectory = "src\\main\\resources\\tables"
-    const val studentsTablePath = "$tablesDirectory\\students.txt"
-    const val variantsTablePath = "$tablesDirectory\\variants.txt"
-    const val testingTablePath = "$tablesDirectory\\testing.txt"
+    const val namesPath = "tools\\names.txt"
     private const val constNumberOfVariants = 5
+//    TODO: watch out for the reinitializing this variable!
     var numberOfVariants = constNumberOfVariants
+    lateinit var currentDirectoryPath: String
+    lateinit var studentsTablePath: String
+    lateinit var variantsTablePath: String
+    lateinit var testingTablePath: String
+
+    fun createDatabaseFiles() {
+        val currentTime = SimpleDateFormat("dd_M_yyyy_HH_mm_ss").format(System.currentTimeMillis())
+        val newDirectoryName = "database_$currentTime"
+        currentDirectoryPath = "./src/main/resources/tables/$newDirectoryName"
+
+        studentsTablePath = "$currentDirectoryPath/students.txt"
+        variantsTablePath = "$currentDirectoryPath/variants.txt"
+        testingTablePath = "$currentDirectoryPath/testing.txt"
+
+        File(currentDirectoryPath).mkdirs()
+        File(studentsTablePath)
+        File(variantsTablePath)
+        File(testingTablePath)
+    }
 }
