@@ -11,7 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -39,6 +40,8 @@ class Gui {
     private var dialogOperation by mutableStateOf("")
 
     private var isOpenDBSuccessful by mutableStateOf(true)
+
+    private var timeToUpdate by mutableStateOf(false)
 
     @Composable
     private fun RowScope.TableCell(
@@ -81,6 +84,7 @@ class Gui {
     private fun StudentsTableScreen() {
         val tableData = mutableStateListOf<StudentsTable.Student>()
         tableData.swapList(StudentsTable.studentsList)
+        timeToUpdate.apply { /* nothing */ }
 
         val column1Weight = .1f // 25%
         val column2Weight = .25f // 25%
@@ -114,6 +118,7 @@ class Gui {
                         text = "Delete",
                         weight = column5Weight,
                         onClick = {
+                            DbConstants.updateBackupFiles()
                             StudentsTable.deleteStudent(id)
                             tableData.swapList(StudentsTable.studentsList)
                         }
@@ -126,6 +131,7 @@ class Gui {
     @Composable
     private fun VariantsTableScreen() {
         val tableData by mutableStateOf(VariantsTable.variantsList)
+        timeToUpdate.apply { /* nothing */ }
 
         val column1Weight = .1f
         val column2Weight = .9f
@@ -155,6 +161,7 @@ class Gui {
     @Composable
     private fun TestingTableScreen() {
         val tableData by mutableStateOf(TestingTable.testingList)
+        timeToUpdate.apply { /* nothing */ }
 
         val column1Weight = .8f // 25%
         val column2Weight = .2f // 25%
@@ -192,6 +199,7 @@ class Gui {
         add: Boolean = false,
         find: Boolean = false
     ) {
+//        TODO: Try FAB instead of outlined buttons
         if (add) {
             Spacer(Modifier.width(8.dp))
             OutlinedButton(
@@ -253,7 +261,7 @@ class Gui {
                         onClick = { switchScreensVisibility(startScreen = true) },
                         modifier = Modifier.padding(start = 8.dp).size(40.dp)
                     ) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = null)
                     }
                     Row(
                         horizontalArrangement = Arrangement.Center
@@ -271,8 +279,12 @@ class Gui {
                         }
                         Spacer(Modifier.width(8.dp))
                     }
-                    Spacer(Modifier.width(32.dp))
-//                    TODO: create backup button
+                    FloatingActionButton(
+                        onClick = { inflateBackupDatabase() },
+                        modifier = Modifier.padding(end = 8.dp).size(40.dp)
+                    ) {
+                        Icon(Icons.Rounded.Cached, contentDescription = null)
+                    }
                 }
 
                 Column(
@@ -350,6 +362,7 @@ class Gui {
             if (newFirstname.isEmpty() || newLastname.isEmpty()) {
                 isOperationSuccessful = false
             } else {
+                DbConstants.updateBackupFiles()
                 StudentsTable.addNewStudent(
                     newFirstname = newFirstname,
                     newLastname = newLastname,
@@ -500,6 +513,7 @@ class Gui {
                 if (newVariantName in VariantsTable.variantsList.map { it.name }) {
                     isOperationSuccessful = false
                 } else {
+                    DbConstants.updateBackupFiles()
                     VariantsTable.addNewVariant(newVariantName)
                     isOperationSuccessful = true
                 }
@@ -697,9 +711,6 @@ class Gui {
         switchScreensVisibility(tablesScreen = true)
     }
 
-    /**
-     * If this function invokes any exception, then ther
-     */
     private fun inflateExistingDatabase() {
         try {
             DbConstants.openExistingDirectory()
@@ -716,6 +727,17 @@ class Gui {
                 isOpenDBSuccessful = true
             }
         }
+    }
+
+    private fun inflateBackupDatabase() {
+        DbConstants.loadBackupFiles()
+
+        // stupid way to update live data in tables :)
+        timeToUpdate = !timeToUpdate
+
+        VariantsTable.inflate(fromScratch = false)
+        StudentsTable.inflate(fromScratch = false)
+        TestingTable.inflate(fromScratch = false)
     }
 
     @Composable

@@ -1,4 +1,6 @@
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.text.SimpleDateFormat
 import javax.swing.JFileChooser
 import javax.swing.UIManager
@@ -14,6 +16,11 @@ object DbConstants {
     lateinit var variantsTablePath: String
     lateinit var testingTablePath: String
 
+    lateinit var backupFolderPath: String
+    lateinit var backupStudentsTablePath: String
+    lateinit var backupVariantsTablePath: String
+    lateinit var backupTestingTablePath: String
+
     fun createDatabaseFiles() {
         val currentTime = SimpleDateFormat("dd_M_yyyy_HH_mm_ss").format(System.currentTimeMillis())
         val newDirectoryName = "database_$currentTime"
@@ -22,6 +29,11 @@ object DbConstants {
         studentsTablePath = "$currentDirectoryPath/students.txt"
         variantsTablePath = "$currentDirectoryPath/variants.txt"
         testingTablePath = "$currentDirectoryPath/testing.txt"
+
+        backupFolderPath = "$currentDirectoryPath/backup"
+        backupStudentsTablePath = "$backupFolderPath/students.txt"
+        backupVariantsTablePath = "$backupFolderPath/variants.txt"
+        backupTestingTablePath = "$backupFolderPath/testing.txt"
 
         File(currentDirectoryPath).mkdirs()
         File(studentsTablePath)
@@ -47,8 +59,51 @@ object DbConstants {
 
         // There could rise an exception, but I don't give a fuck about it.
         val selectedDatabase = fileChooser.selectedFile!!
-        studentsTablePath = selectedDatabase.listFiles()!![0].path
-        testingTablePath = selectedDatabase.listFiles()!![1].path
-        variantsTablePath = selectedDatabase.listFiles()!![2].path
+        studentsTablePath = selectedDatabase.listFiles()!![1].path
+        testingTablePath = selectedDatabase.listFiles()!![2].path
+        variantsTablePath = selectedDatabase.listFiles()!![3].path
+
+        currentDirectoryPath = selectedDatabase.path
+
+        backupFolderPath = "$currentDirectoryPath/backup"
+        backupStudentsTablePath = "$backupFolderPath/students.txt"
+        backupVariantsTablePath = "$backupFolderPath/variants.txt"
+        backupTestingTablePath = "$backupFolderPath/testing.txt"
+    }
+
+    fun updateBackupFiles() {
+        Files.copy(
+            File(studentsTablePath).toPath(),
+            File(backupStudentsTablePath).toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+        Files.copy(
+            File(variantsTablePath).toPath(),
+            File(backupVariantsTablePath).toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+        Files.copy(
+            File(testingTablePath).toPath(),
+            File(backupTestingTablePath).toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+    }
+
+    fun loadBackupFiles() {
+        Files.copy(
+            File(backupStudentsTablePath).toPath(),
+            File(studentsTablePath).toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+        Files.copy(
+            File(backupVariantsTablePath).toPath(),
+            File(variantsTablePath).toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+        Files.copy(
+            File(backupTestingTablePath).toPath(),
+            File(testingTablePath).toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
     }
 }
