@@ -72,7 +72,7 @@ class VariantsTable {
                         name = splitedLine.subList(1, splitedLine.size).joinToString(" ")
                     )
 
-                    currentId = splitedLine[0].toInt()
+                    currentId = splitedLine[0].toInt() + 1
                 }
             }
         }
