@@ -38,6 +38,8 @@ class Gui {
     private var isDialogOpen by mutableStateOf(false)
     private var dialogOperation by mutableStateOf("")
 
+    private var isOpenDBSuccessful by mutableStateOf(true)
+
     @Composable
     private fun RowScope.TableCell(
         text: String,
@@ -706,9 +708,13 @@ class Gui {
             StudentsTable.inflate(fromScratch = false)
             TestingTable.inflate(fromScratch = false)
 
+            switchTablesVisibility(students = true)
             switchScreensVisibility(tablesScreen = true)
         } catch (e: Exception) {
-//            TODO: need to show the message, that user is a bustard.
+            isOpenDBSuccessful = false
+            Timer().schedule(2000) {
+                isOpenDBSuccessful = true
+            }
         }
     }
 
@@ -740,6 +746,15 @@ class Gui {
                     ) {
                         Text("Open existing")
                     }
+                }
+                AnimatedVisibility(
+                    visible = !isOpenDBSuccessful,
+                ) {
+                    Text(
+                        "Something went wrong.",
+                        color = Color(0xFFFF0000),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
