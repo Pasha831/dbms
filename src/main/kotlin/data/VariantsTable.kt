@@ -5,7 +5,7 @@ import java.io.File
 
 class VariantsTable {
     companion object {
-        var currentId = 1
+        private var currentId = 1
         val variantsList = mutableListOf<Variant>()
 
         fun addNewVariant(name: String, isDefaultVariant: Boolean = false) {
@@ -17,6 +17,16 @@ class VariantsTable {
                 DbConstants.numberOfVariants++
             }
             variantsList.add(newVariant)
+            refresh()
+        }
+
+        private fun addExistingVariant(id: Int, name: String) {
+            val variant = Variant(
+                id = id,
+                name = name
+            )
+            DbConstants.numberOfVariants++
+            variantsList.add(variant)
         }
 
         fun getVariant(studentId: Int): Variant {
@@ -27,7 +37,7 @@ class VariantsTable {
             return variantsList.find { it.id == variantId }
         }
 
-        fun refresh() {
+        private fun refresh() {
             val outputStream = File(DbConstants.variantsTablePath).printWriter()
 
             outputStream.use { out ->
@@ -42,16 +52,30 @@ class VariantsTable {
             currentId = 1
 
             if (fromScratch) {
+                DbConstants.numberOfVariants = 5
 
+                // This naming only for based variants
+                for (id in 1..DbConstants.numberOfVariants) {
+                    addNewVariant("variant$id", isDefaultVariant = true)
+                }
+
+                refresh()
             } else {
+                DbConstants.numberOfVariants = 0
+                val inputStream = File(DbConstants.variantsTablePath).inputStream()
 
-            }
+                inputStream.bufferedReader().forEachLine {
+                    val splitedLine = it.split(" ")
 
-            // This naming only for based variants
-            for (id in 1..DbConstants.numberOfVariants) {
-                addNewVariant("variant$id", isDefaultVariant = true)
+                    addExistingVariant(
+                        id = splitedLine[0].toInt(),
+                        name = splitedLine.subList(1, splitedLine.size).joinToString(" ")
+                    )
+
+                    currentId = splitedLine[0].toInt()
+                    DbConstants.numberOfVariants++
+                }
             }
-            refresh()
         }
     }
 
