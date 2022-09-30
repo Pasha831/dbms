@@ -1,6 +1,8 @@
 package data
 
+import DbConstants
 import java.io.File
+import java.io.FileInputStream
 
 class StudentsTable {
     /**
@@ -26,9 +28,9 @@ class StudentsTable {
 
     companion object {
         val studentsList = mutableListOf<Student>()
-        var currentId = 1
+        private var currentId = 1
 
-        fun refresh() {
+        private fun refresh() {
             val outputStream = File(DbConstants.studentsTablePath).printWriter()
 
             outputStream.use { out ->
@@ -60,6 +62,23 @@ class StudentsTable {
             )
         }
 
+        private fun addExistingStudent(
+            id: Int,
+            firstname: String,
+            lastname: String,
+            patronymic: String
+        ) {
+            val student = Student(
+                id = id,
+                firstname = firstname,
+                lastname = lastname,
+                patronymic = patronymic
+            )
+            currentId = id + 1
+
+            studentsList.add(student)
+        }
+
         fun deleteStudent(id: Int) {
             studentsList.removeIf { it.id == id }
             refresh()
@@ -70,31 +89,42 @@ class StudentsTable {
         fun findStudent(studentId: Int): Student? {
             return studentsList.find { it.id == studentId }
         }
-    }
 
-    /**
-     * Inflates students table previously clearing studentsList.
-     *
-     * Creates directory with tables, reads input file and makes output table
-     */
-    fun inflate(filePath: String) {
-        // create directory with tables, if it doesn't exist
-        File(DbConstants.tablesDirectory).mkdir()
+        fun inflate(fromScratch: Boolean = true) {
+            studentsList.clear()
+            currentId = 1
 
-        // input and output streams of information
-        val inputStream = File(filePath).inputStream()
+            // One difference: different sources of inputStream
+            lateinit var inputStream: FileInputStream
 
-        // read each line, split it and fill studentsList
-        inputStream.bufferedReader().forEachLine {
-            val splitedLine = it.split(" ")
+            if (fromScratch) {
+                inputStream = File(DbConstants.namesPath).inputStream()
 
-            addNewStudent(
-                newFirstname = splitedLine[0],
-                newLastname = splitedLine[1],
-                newPatronymic = splitedLine[2]
-            )
+                inputStream.bufferedReader().forEachLine {
+                    val splitedLine = it.split(" ")
+
+                    addNewStudent(
+                        newFirstname = splitedLine[0],
+                        newLastname = splitedLine[1],
+                        newPatronymic = splitedLine[2]
+                    )
+                }
+
+                refresh()
+            } else {
+                inputStream = File(DbConstants.studentsTablePath).inputStream()
+
+                inputStream.bufferedReader().forEachLine {
+                    val splitedLine = it.split(" ")
+
+                    addExistingStudent(
+                        id = splitedLine[0].toInt(),
+                        firstname = splitedLine[1],
+                        lastname = splitedLine[2],
+                        patronymic = splitedLine[3]
+                    )
+                }
+            }
         }
-
-        refresh()
     }
 }

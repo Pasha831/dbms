@@ -1,5 +1,6 @@
 package ui
 
+import DbConstants
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
@@ -36,6 +37,8 @@ class Gui {
 
     private var isDialogOpen by mutableStateOf(false)
     private var dialogOperation by mutableStateOf("")
+
+    private var isOpenDBSuccessful by mutableStateOf(true)
 
     @Composable
     private fun RowScope.TableCell(
@@ -269,6 +272,7 @@ class Gui {
                         Spacer(Modifier.width(8.dp))
                     }
                     Spacer(Modifier.width(32.dp))
+//                    TODO: create backup button
                 }
 
                 Column(
@@ -683,6 +687,37 @@ class Gui {
         }
     }
 
+    private fun inflateNewDatabase() {
+        DbConstants.createDatabaseFiles()
+
+        VariantsTable.inflate(fromScratch = true)
+        StudentsTable.inflate(fromScratch = true)
+        TestingTable.inflate(fromScratch = true)
+
+        switchScreensVisibility(tablesScreen = true)
+    }
+
+    /**
+     * If this function invokes any exception, then ther
+     */
+    private fun inflateExistingDatabase() {
+        try {
+            DbConstants.openExistingDirectory()
+
+            VariantsTable.inflate(fromScratch = false)
+            StudentsTable.inflate(fromScratch = false)
+            TestingTable.inflate(fromScratch = false)
+
+            switchTablesVisibility(students = true)
+            switchScreensVisibility(tablesScreen = true)
+        } catch (e: Exception) {
+            isOpenDBSuccessful = false
+            Timer().schedule(2000) {
+                isOpenDBSuccessful = true
+            }
+        }
+    }
+
     @Composable
     private fun StartScreen() {
         MaterialTheme {
@@ -697,17 +732,29 @@ class Gui {
                 )
                 Row {
                     Button(
-                        onClick = { switchScreensVisibility(tablesScreen = true) }
+                        onClick = {
+                            inflateNewDatabase()
+                        }
                     ) {
                         Text("Create database")
                     }
                     Spacer(Modifier.width(16.dp))
                     OutlinedButton(
-//                        TODO: implement opening the existing DB
-                        onClick = {}
+                        onClick = {
+                            inflateExistingDatabase()
+                        }
                     ) {
                         Text("Open existing")
                     }
+                }
+                AnimatedVisibility(
+                    visible = !isOpenDBSuccessful,
+                ) {
+                    Text(
+                        "Something went wrong.",
+                        color = Color(0xFFFF0000),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
