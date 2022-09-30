@@ -1,13 +1,14 @@
 import java.io.File
 import java.text.SimpleDateFormat
+import javax.swing.JFileChooser
+import javax.swing.UIManager
 
 /**
  * Useful constants of the database
  */
 object DbConstants {
     const val namesPath = "tools\\names.txt"
-    private const val constNumberOfVariants = 5
-    var numberOfVariants = constNumberOfVariants
+    var numberOfVariants = 0
     lateinit var currentDirectoryPath: String
     lateinit var studentsTablePath: String
     lateinit var variantsTablePath: String
@@ -26,7 +27,28 @@ object DbConstants {
         File(studentsTablePath)
         File(variantsTablePath)
         File(testingTablePath)
+    }
 
-        numberOfVariants = constNumberOfVariants
+    private fun createTablesDirectory() {
+        File("./src/main/resources/tables").mkdirs()
+    }
+
+    fun openExistingDirectory() {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+        createTablesDirectory()
+
+        val fileChooser = JFileChooser("./src/main/resources/tables").apply {
+            fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+            dialogTitle = "Select a folder"
+            approveButtonText = "Select"
+            approveButtonToolTipText = "Select directory"
+        }
+        fileChooser.showOpenDialog(null)
+
+        // There could rise an exception, but I don't give a fuck about it.
+        val selectedDatabase = fileChooser.selectedFile!!
+        studentsTablePath = selectedDatabase.listFiles()!![0].path
+        testingTablePath = selectedDatabase.listFiles()!![1].path
+        variantsTablePath = selectedDatabase.listFiles()!![2].path
     }
 }
