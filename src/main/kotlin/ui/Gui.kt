@@ -270,6 +270,7 @@ class Gui {
                         Spacer(Modifier.width(8.dp))
                     }
                     Spacer(Modifier.width(32.dp))
+//                    TODO: create backup button
                 }
 
                 Column(
@@ -691,7 +692,24 @@ class Gui {
         StudentsTable.inflate(fromScratch = true)
         TestingTable.inflate(fromScratch = true)
 
-        switchTablesVisibility(students = true)
+        switchScreensVisibility(tablesScreen = true)
+    }
+
+    /**
+     * If this function invokes any exception, then ther
+     */
+    private fun inflateExistingDatabase() {
+        try {
+            DbConstants.openExistingDirectory()
+
+            VariantsTable.inflate(fromScratch = false)
+            StudentsTable.inflate(fromScratch = false)
+            TestingTable.inflate(fromScratch = false)
+
+            switchScreensVisibility(tablesScreen = true)
+        } catch (e: Exception) {
+//            TODO: need to show the message, that user is a bustard.
+        }
     }
 
     @Composable
@@ -710,15 +728,15 @@ class Gui {
                     Button(
                         onClick = {
                             inflateNewDatabase()
-                            switchScreensVisibility(tablesScreen = true)
                         }
                     ) {
                         Text("Create database")
                     }
                     Spacer(Modifier.width(16.dp))
                     OutlinedButton(
-//                      TODO: implement opening the existing DB
-                        onClick = {}
+                        onClick = {
+                            inflateExistingDatabase()
+                        }
                     ) {
                         Text("Open existing")
                     }
