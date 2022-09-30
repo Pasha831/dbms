@@ -28,9 +28,9 @@ class StudentsTable {
 
     companion object {
         val studentsList = mutableListOf<Student>()
-        var currentId = 1
+        private var currentId = 1
 
-        fun refresh() {
+        private fun refresh() {
             val outputStream = File(DbConstants.studentsTablePath).printWriter()
 
             outputStream.use { out ->
@@ -62,6 +62,23 @@ class StudentsTable {
             )
         }
 
+        private fun addExistingStudent(
+            id: Int,
+            firstname: String,
+            lastname: String,
+            patronymic: String
+        ) {
+            val student = Student(
+                id = id,
+                firstname = firstname,
+                lastname = lastname,
+                patronymic = patronymic
+            )
+            currentId = id + 1
+
+            studentsList.add(student)
+        }
+
         fun deleteStudent(id: Int) {
             studentsList.removeIf { it.id == id }
             refresh()
@@ -82,21 +99,32 @@ class StudentsTable {
 
             if (fromScratch) {
                 inputStream = File(DbConstants.namesPath).inputStream()
+
+                inputStream.bufferedReader().forEachLine {
+                    val splitedLine = it.split(" ")
+
+                    addNewStudent(
+                        newFirstname = splitedLine[0],
+                        newLastname = splitedLine[1],
+                        newPatronymic = splitedLine[2]
+                    )
+                }
+
+                refresh()
             } else {
-//                TODO: create specific directory with Java AWT
+                inputStream = File(DbConstants.studentsTablePath).inputStream()
+
+                inputStream.bufferedReader().forEachLine {
+                    val splitedLine = it.split(" ")
+
+                    addExistingStudent(
+                        id = splitedLine[0].toInt(),
+                        firstname = splitedLine[1],
+                        lastname = splitedLine[2],
+                        patronymic = splitedLine[3]
+                    )
+                }
             }
-
-            inputStream.bufferedReader().forEachLine {
-                val splitedLine = it.split(" ")
-
-                addNewStudent(
-                    newFirstname = splitedLine[0],
-                    newLastname = splitedLine[1],
-                    newPatronymic = splitedLine[2]
-                )
-            }
-
-            refresh()
         }
     }
 }
