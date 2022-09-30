@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
@@ -44,6 +45,7 @@ class Gui {
     private var isOpenDBSuccessful by mutableStateOf(true)
 
     private var timeToUpdate by mutableStateOf(false)
+    private var isBackupAvailable by mutableStateOf(false)
 
     @Composable
     private fun RowScope.TableCell(
@@ -121,6 +123,7 @@ class Gui {
                         weight = column5Weight,
                         onClick = {
                             DbConstants.updateBackupFiles()
+                            isBackupAvailable = true
                             StudentsTable.deleteStudent(id)
                             tableData.swapList(StudentsTable.studentsList)
                         }
@@ -284,7 +287,10 @@ class Gui {
                     }
                     FloatingActionButton(
                         onClick = { inflateBackupDatabase() },
-                        modifier = Modifier.padding(end = 8.dp).size(40.dp)
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(40.dp)
+                            .alpha(if (isBackupAvailable) 1f else 0f)
                     ) {
                         Icon(Icons.Rounded.Cached, contentDescription = null)
                     }
@@ -366,6 +372,7 @@ class Gui {
                 isOperationSuccessful = false
             } else {
                 DbConstants.updateBackupFiles()
+                isBackupAvailable = true
                 StudentsTable.addNewStudent(
                     newFirstname = newFirstname,
                     newLastname = newLastname,
@@ -517,6 +524,7 @@ class Gui {
                     isOperationSuccessful = false
                 } else {
                     DbConstants.updateBackupFiles()
+                    isBackupAvailable = true
                     VariantsTable.addNewVariant(newVariantName)
                     isOperationSuccessful = true
                 }
@@ -733,6 +741,7 @@ class Gui {
     }
 
     private fun inflateBackupDatabase() {
+        isBackupAvailable = false
         DbConstants.loadBackupFiles()
 
         // stupid way to update live data in tables :)
