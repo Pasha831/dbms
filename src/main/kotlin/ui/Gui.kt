@@ -41,6 +41,8 @@ class Gui {
 
     private var isOpenDBSuccessful by mutableStateOf(true)
 
+    private var timeToUpdate by mutableStateOf(false)
+
     @Composable
     private fun RowScope.TableCell(
         text: String,
@@ -82,6 +84,7 @@ class Gui {
     private fun StudentsTableScreen() {
         val tableData = mutableStateListOf<StudentsTable.Student>()
         tableData.swapList(StudentsTable.studentsList)
+        timeToUpdate.apply { /* nothing */ }
 
         val column1Weight = .1f // 25%
         val column2Weight = .25f // 25%
@@ -128,6 +131,7 @@ class Gui {
     @Composable
     private fun VariantsTableScreen() {
         val tableData by mutableStateOf(VariantsTable.variantsList)
+        timeToUpdate.apply { /* nothing */ }
 
         val column1Weight = .1f
         val column2Weight = .9f
@@ -157,6 +161,7 @@ class Gui {
     @Composable
     private fun TestingTableScreen() {
         val tableData by mutableStateOf(TestingTable.testingList)
+        timeToUpdate.apply { /* nothing */ }
 
         val column1Weight = .8f // 25%
         val column2Weight = .2f // 25%
@@ -726,6 +731,9 @@ class Gui {
 
     private fun inflateBackupDatabase() {
         DbConstants.loadBackupFiles()
+
+        // stupid way to update live data in tables :)
+        timeToUpdate = !timeToUpdate
 
         VariantsTable.inflate(fromScratch = false)
         StudentsTable.inflate(fromScratch = false)
