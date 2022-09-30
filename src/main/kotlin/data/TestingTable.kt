@@ -7,7 +7,7 @@ class TestingTable {
     companion object {
         val testingList = mutableListOf<Testing>()
 
-        fun refresh() {
+        private fun refresh() {
             val outputStream = File(DbConstants.testingTablePath).printWriter()
 
             outputStream.use { out ->
@@ -32,6 +32,23 @@ class TestingTable {
             refresh()
         }
 
+        private fun addExistingTesting(
+            studentFullName: String,
+            variantName: String
+        ) {
+            val student = StudentsTable.studentsList.find { it.getStudentName() == studentFullName }
+            val variant = VariantsTable.variantsList.find { it.name == variantName }
+
+            val newTesting = Testing(
+                studentId = student!!.id,
+                variantId = variant!!.id,
+                studentFullName = student.getStudentName(),
+                variantName = variant.getVariantName()
+            )
+
+            testingList.add(newTesting)
+        }
+
         fun findTesting(fullName: String): Testing? {
             val tempFullName = fullName.split(" ").toMutableList()
             if (tempFullName.size == 2) {
@@ -49,16 +66,24 @@ class TestingTable {
             testingList.clear()
 
             if (fromScratch) {
-
+                for (student in StudentsTable.studentsList) {
+                    addNewTesting(student = student)
+                }
+                refresh()
             } else {
+                val inputStream = File(DbConstants.testingTablePath).inputStream()
 
+                inputStream.bufferedReader().forEachLine {
+                    val splitedLine = it.split(" ")
+                    val fullName = splitedLine.subList(0, 3).joinToString(" ")
+                    val variantName = splitedLine.subList(3, splitedLine.size).joinToString(" ")
+
+                    addExistingTesting(
+                        studentFullName = fullName,
+                        variantName = variantName
+                    )
+                }
             }
-
-            for (student in StudentsTable.studentsList) {
-                addNewTesting(student = student)
-            }
-
-            refresh()
         }
     }
 
