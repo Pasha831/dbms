@@ -73,7 +73,6 @@ class VariantsTable {
                     )
 
                     currentId = splitedLine[0].toInt()
-                    DbConstants.numberOfVariants++
                 }
             }
         }
