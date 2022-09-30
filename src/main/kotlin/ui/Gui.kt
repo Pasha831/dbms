@@ -11,8 +11,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cached
+import androidx.compose.material.icons.rounded.FindInPage
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -199,27 +201,28 @@ class Gui {
         add: Boolean = false,
         find: Boolean = false
     ) {
-//        TODO: Try FAB instead of outlined buttons
         if (add) {
-            Spacer(Modifier.width(8.dp))
-            OutlinedButton(
+            Spacer(Modifier.width(16.dp))
+            FloatingActionButton(
                 onClick = {
                     isDialogOpen = true
                     dialogOperation = "add"
                 },
+                modifier = Modifier.size(40.dp)
             ) {
-                Text("Add")
+                Icon(Icons.Rounded.Add, contentDescription = null)
             }
         }
         if (find) {
-            Spacer(Modifier.width(8.dp))
-            OutlinedButton(
+            Spacer(Modifier.width(16.dp))
+            FloatingActionButton(
                 onClick = {
                     isDialogOpen = true
                     dialogOperation = "find"
                 },
+                modifier = Modifier.size(40.dp)
             ) {
-                Text("Find")
+                Icon(Icons.Rounded.FindInPage, contentDescription = null)
             }
         }
     }
