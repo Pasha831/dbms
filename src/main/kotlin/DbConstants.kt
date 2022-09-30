@@ -39,6 +39,11 @@ object DbConstants {
         File(studentsTablePath)
         File(variantsTablePath)
         File(testingTablePath)
+
+        File(backupFolderPath).mkdirs()
+        File(backupStudentsTablePath).createNewFile()
+        File(backupVariantsTablePath).createNewFile()
+        File(backupTestingTablePath).createNewFile()
     }
 
     private fun createTablesDirectory() {
