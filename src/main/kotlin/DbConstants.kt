@@ -9,7 +9,7 @@ import javax.swing.UIManager
  * Useful constants of the database
  */
 object DbConstants {
-    const val namesPath = "tools\\names.txt"
+    const val namesPath = "./tools/names.txt"
     var numberOfVariants = 0
     lateinit var currentDirectoryPath: String
     lateinit var studentsTablePath: String
@@ -64,9 +64,9 @@ object DbConstants {
 
         // There could rise an exception, but I don't give a fuck about it.
         val selectedDatabase = fileChooser.selectedFile!!
-        studentsTablePath = selectedDatabase.listFiles()!![1].path
-        testingTablePath = selectedDatabase.listFiles()!![2].path
-        variantsTablePath = selectedDatabase.listFiles()!![3].path
+        studentsTablePath = selectedDatabase.listFiles()?.find { it.path.contains("students.txt")  }?.path ?: ""
+        testingTablePath = selectedDatabase.listFiles()?.find { it.path.contains("testing.txt")  }?.path ?: ""
+        variantsTablePath = selectedDatabase.listFiles()?.find { it.path.contains("variants.txt")  }?.path ?: ""
 
         currentDirectoryPath = selectedDatabase.path
 
